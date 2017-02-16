@@ -13,5 +13,6 @@ public:
 
 private:
 	ID3D11Buffer* mVertexBuffer;
+	ID3D11Buffer* mIndexBuffer;
 };
 
