@@ -37,7 +37,11 @@ int main(int argc, char **argv)
 	scene = new Scene();
 	scene->addRenderer(renderer);
 
-	UINT obj1 = scene->createObject(new Object());
+
+	Mesh mesh;
+	getTriangleMesh(&mesh);
+
+	UINT obj1 = scene->createObject(new Object(), &mesh);
 	
 
 	core->loop(updateFunc, renderFunc);

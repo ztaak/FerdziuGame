@@ -4,18 +4,22 @@
 
 void Scene::draw()
 {
+	assert(mRenderer != nullptr);
+
+	if (mCamera == nullptr) {// TODO: NO CAMERA ERRRR HANDLING
+		
+	}
+
+		
 	for (int i = 0; i < mObjs.size(); ++i) 
 	{
 		mObjs[i]->draw(mRenderer);
 	}
 }
 
-void Scene::addCamera()
+void Scene::addCamera(Camera* lpCamera)
 {
-}
-
-void Scene::addShader()
-{
+	assert(lpCamera != nullptr);
 }
 
 void Scene::addRenderer(Renderer * lpRenderer)
@@ -25,11 +29,11 @@ void Scene::addRenderer(Renderer * lpRenderer)
 	mRenderer = lpRenderer;
 }
 
-UINT Scene::createObject(Object* lpObject)
+UINT Scene::createObject(Object* lpObject, Mesh * lpMesh)
 {
 	assert(lpObject != nullptr);
 
-	lpObject->init(mRenderer);
+	lpObject->init(mRenderer, lpMesh);
 
 	UINT id = mObjs.size();
 	mObjs.push_back(lpObject);

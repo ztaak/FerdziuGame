@@ -4,68 +4,43 @@
 
 Object::Object()
 {
+	mIndiDrawCount = 0;
 }
 
-HRESULT Object::init(Renderer* lpRenderer)
+HRESULT Object::init(Renderer* lpRenderer, Mesh * lpMesh)
 {
-	DefaultVertex vertices[] =
-	{
-		{ DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-		{ DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f) },
-		{ DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) },
-	};
+	
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(DefaultVertex) * 8;
+	bd.ByteWidth = sizeof(DefaultVertex) * lpMesh->vertices.size();
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory(&InitData, sizeof(InitData));
-	InitData.pSysMem = vertices;
+	InitData.pSysMem = &lpMesh->vertices[0];
 	HRESULT hr = lpRenderer->getDev()->CreateBuffer(&bd, &InitData, &mVertexBuffer);
 	if (FAILED(hr))
 		return hr;
 
 	// Create index buffer
-	WORD indices[] =
-	{
-		3,1,0,
-		2,1,3,
-
-		0,5,4,
-		1,5,0,
-
-		3,4,7,
-		0,4,3,
-
-		1,6,5,
-		2,6,1,
-
-		2,7,6,
-		3,7,2,
-
-		6,4,5,
-		7,4,6,
-	};
+	
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(WORD) * 36;
+	bd.ByteWidth = sizeof(WORD) * lpMesh->indices.size();
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
-	InitData.pSysMem = indices;
+	InitData.pSysMem = &lpMesh->indices[0];
 	hr = lpRenderer->getDev()->CreateBuffer(&bd, &InitData, &mIndexBuffer);
 	if (FAILED(hr))
 		return hr;
 
 
 
-
+	mIndiDrawCount = lpMesh->indices.size();
 	
+
+	XMStoreFloat4x4(&mMatrix, XMMatrixIdentity());
+	XMStoreFloat4x4(&mMatrix,  XMMatrixTranslation(0.0f,0.0f, 04.0f));
 
 	return S_OK;
 }
@@ -83,8 +58,12 @@ HRESULT Object::draw(Renderer * lpRenderer)
 
 	lpRenderer->useShader();
 
+	BufferPerObject bpo;
+	bpo.worldMatrix = mMatrix;
 
-	lpRenderer->getDevCon()->Draw(3, 0);
+	lpRenderer->updateObjectConstantBuffer(&bpo);
+
+	lpRenderer->getDevCon()->Draw(mIndiDrawCount, 0);
 
 	return S_OK;
 }

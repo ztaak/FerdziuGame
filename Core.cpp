@@ -4,7 +4,7 @@
 
 HRESULT Core::createWindow(WND_PARAMS pparams)
 {
-	mWndParams = pparams;
+	sWndParams = pparams;
 
 	WNDCLASSEX wc;
 
@@ -52,8 +52,8 @@ HRESULT Core::initializeAPI()
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      // how swap chain is to be used
 	scd.OutputWindow = mHwnd;							    // the window to be used
-	scd.SampleDesc.Count = mWndParams.msaa;                 // how many multisamples
-	scd.Windowed = !mWndParams.isFS;                        // windowed/full-screen mode
+	scd.SampleDesc.Count = sWndParams.msaa;                 // how many multisamples
+	scd.Windowed = !sWndParams.isFS;                        // windowed/full-screen mode
 
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, NULL, NULL, D3D11_SDK_VERSION,
 		&scd, &mSwapChain, &mDev, NULL, &mDevCon);
@@ -75,8 +75,8 @@ HRESULT Core::initializeAPI()
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = mWndParams.cSize.x;
-	viewport.Height = mWndParams.cSize.y;
+	viewport.Width = sWndParams.cSize.x;
+	viewport.Height = sWndParams.cSize.y;
 
 	mDevCon->RSSetViewports(1, &viewport);
 

@@ -9,13 +9,7 @@
 #include "Renderer.h"
 #include <functional>
 
-struct WND_PARAMS {
-	DirectX::XMFLOAT2 pos;
-	DirectX::XMFLOAT2 cSize;
-	std::string title;
-	UINT32 msaa;
-	bool isFS;
-};
+
 
 class Core
 {
@@ -39,7 +33,6 @@ private:
 	ID3D11RenderTargetView* mBackBuffer;
 
 	HWND mHwnd;
-	WND_PARAMS mWndParams;
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 

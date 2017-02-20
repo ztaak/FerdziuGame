@@ -1,4 +1,10 @@
 
+
+cbuffer cbPerObj : register(b0) 
+{
+	matrix world;
+}
+
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
@@ -12,7 +18,7 @@ VS_OUTPUT VS( float4 Pos : POSITION, float4 Color : COLOR )
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
     output.Color = Color;
-	output.Pos = Pos;
+	output.Pos = mul(Pos, world);
     return output;
 }
 

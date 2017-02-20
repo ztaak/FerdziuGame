@@ -9,6 +9,24 @@
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
 #include <assert.h>
+#include <vector>
+
+using namespace DirectX;
+
+struct WND_PARAMS {
+	DirectX::XMFLOAT2 pos;
+	DirectX::XMFLOAT2 cSize;
+	std::string title;
+	UINT32 msaa;
+	bool isFS;
+};
+
+
+
+// STATIC VARIEBALS
+
+static WND_PARAMS sWndParams;
+
 
 
 
@@ -16,6 +34,12 @@ struct DefaultVertex
 {
 	DirectX::XMFLOAT3 Pos;
 	DirectX::XMFLOAT4 Color;
+};
+
+struct Mesh 
+{
+	std::vector<DefaultVertex> vertices;
+	std::vector<WORD> indices;
 };
 
 static HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
@@ -44,4 +68,57 @@ static HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPC
 	if (pErrorBlob) pErrorBlob->Release();
 
 	return S_OK;
+}
+
+static void getCubeMesh(Mesh *lpMesh)
+{
+	std::vector<DefaultVertex> verts =
+	{
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) },
+	};
+	std::vector<WORD> indi =
+	{
+		3,1,0,
+		2,1,3,
+
+		0,5,4,
+		1,5,0,
+
+		3,4,7,
+		0,4,3,
+
+		1,6,5,
+		2,6,1,
+
+		2,7,6,
+		3,7,2,
+
+		6,4,5,
+		7,4,6,
+	};
+	lpMesh->vertices = verts;
+	lpMesh->indices = indi;
+}
+
+static void getTriangleMesh(Mesh *lpMesh) 
+{
+	std::vector<DefaultVertex> verts = 
+	{
+		{ XMFLOAT3(0.0f, 0.5f, 0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(0.5f, -0.5f, 0.5f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(-0.5f, -0.5f, 0.5f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
+	};
+	std::vector<WORD> indi =
+	{
+		0,1,2
+	};
+	lpMesh->vertices = verts;
+	lpMesh->indices = indi;
 }

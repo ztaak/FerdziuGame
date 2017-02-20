@@ -2,6 +2,42 @@
 
 #include "Common.h"
 
+struct BufferPerObject
+{
+	DirectX::XMFLOAT4X4 worldMatrix;
+};
+
+template<typename T>
+HRESULT createConstantBuffer(D3D11_USAGE usage, UINT cpuAccessFlag, UINT index,
+	ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11Buffer** bufferOut)
+{
+	T bufferData;
+	ZeroMemory(&bufferData, sizeof(T));
+
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(T);
+	cbDesc.Usage = usage;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = cpuAccessFlag;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &bufferData;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	HRESULT hr = device->CreateBuffer(&cbDesc, &InitData,
+		bufferOut);
+
+	if (FAILED(hr))
+		return hr;
+
+	deviceContext->VSSetConstantBuffers(index, 1, bufferOut);
+	deviceContext->PSSetConstantBuffers(index, 1, bufferOut);
+	return S_OK;
+}
+
 class Renderer
 {
 public:
@@ -11,6 +47,7 @@ public:
 	void cleanScr(DirectX::XMFLOAT4 color);
 	void swapAndPresent();
 
+	HRESULT updateObjectConstantBuffer(BufferPerObject * pData);
 
 	ID3D11Device* getDev() { return mDev; }
 	ID3D11DeviceContext* getDevCon() { return mDevCon; }
@@ -31,5 +68,7 @@ private:
 	ID3D11VertexShader* mVertexShader;
 	ID3D11PixelShader* mPixelShader;
 	ID3D11InputLayout* mVertexLayout;
+
+	ID3D11Buffer* mBufferPerObject;
 };
 
