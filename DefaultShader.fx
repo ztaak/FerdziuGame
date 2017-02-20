@@ -12,6 +12,7 @@ VS_OUTPUT VS( float4 Pos : POSITION, float4 Color : COLOR )
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
     output.Color = Color;
+	output.Pos = Pos;
     return output;
 }
 
