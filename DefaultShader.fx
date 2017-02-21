@@ -1,4 +1,13 @@
 
+cbuffer cbPerFrame : register(b2)
+{
+	matrix view;
+}
+
+cbuffer cbPerApp : register(b1)
+{
+	matrix proj;
+}
 
 cbuffer cbPerObj : register(b0) 
 {
@@ -18,7 +27,15 @@ VS_OUTPUT VS( float4 Pos : POSITION, float4 Color : COLOR )
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
     output.Color = Color;
-	output.Pos = mul(Pos, world);
+	
+
+	float4x4 modelView = mul(view, world);
+	float4x4 modelViewProjection = mul(proj, modelView);
+	float4 pos = mul(modelViewProjection, Pos);
+
+	output.Pos = pos;
+	
+	
     return output;
 }
 

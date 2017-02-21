@@ -40,7 +40,7 @@ HRESULT Object::init(Renderer* lpRenderer, Mesh * lpMesh)
 	
 
 	XMStoreFloat4x4(&mMatrix, XMMatrixIdentity());
-	XMStoreFloat4x4(&mMatrix,  XMMatrixTranslation(0.0f,0.0f, 04.0f));
+	XMStoreFloat4x4(&mMatrix,  XMMatrixTranslation(0.0f,0.0f, 0.0f));
 
 	return S_OK;
 }
@@ -63,9 +63,14 @@ HRESULT Object::draw(Renderer * lpRenderer)
 
 	lpRenderer->updateObjectConstantBuffer(&bpo);
 
-	lpRenderer->getDevCon()->Draw(mIndiDrawCount, 0);
+	lpRenderer->getDevCon()->DrawIndexed(mIndiDrawCount, 0, 0);
 
 	return S_OK;
+}
+
+void Object::setPos(XMFLOAT3 pos)
+{
+	XMStoreFloat4x4(&mMatrix, XMMatrixTranslation(pos.x, pos.y, pos.z));
 }
 
 

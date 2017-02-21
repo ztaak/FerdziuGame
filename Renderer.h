@@ -7,6 +7,16 @@ struct BufferPerObject
 	DirectX::XMFLOAT4X4 worldMatrix;
 };
 
+struct BufferPerApp
+{
+	DirectX::XMFLOAT4X4 projMatrix;
+};
+
+struct BufferPerFrame
+{
+	DirectX::XMFLOAT4X4 viewMatrix;
+};
+
 template<typename T>
 HRESULT createConstantBuffer(D3D11_USAGE usage, UINT cpuAccessFlag, UINT index,
 	ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11Buffer** bufferOut)
@@ -48,6 +58,8 @@ public:
 	void swapAndPresent();
 
 	HRESULT updateObjectConstantBuffer(BufferPerObject * pData);
+	HRESULT updateAppConstantBuffer(BufferPerApp * pData);
+	HRESULT updateFrameConstantBuffer(BufferPerFrame * pData);
 
 	ID3D11Device* getDev() { return mDev; }
 	ID3D11DeviceContext* getDevCon() { return mDevCon; }
@@ -70,5 +82,7 @@ private:
 	ID3D11InputLayout* mVertexLayout;
 
 	ID3D11Buffer* mBufferPerObject;
+	ID3D11Buffer* mBufferPerApp;
+	ID3D11Buffer* mBufferPerFrame;
 };
 

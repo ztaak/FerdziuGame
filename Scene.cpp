@@ -6,11 +6,14 @@ void Scene::draw()
 {
 	assert(mRenderer != nullptr);
 
-	if (mCamera == nullptr) {// TODO: NO CAMERA ERRRR HANDLING
+
+	assert(mCamera != nullptr); // TODO: CHANGE THIS TO CREATE OWN CAMERA
+	if (mCamera == nullptr) {// TODO: CAMERA ERRRR HANDLING
 		
 	}
 
-		
+	
+	mCamera->update(mRenderer);
 	for (int i = 0; i < mObjs.size(); ++i) 
 	{
 		mObjs[i]->draw(mRenderer);
@@ -20,6 +23,10 @@ void Scene::draw()
 void Scene::addCamera(Camera* lpCamera)
 {
 	assert(lpCamera != nullptr);
+
+	mCamera = lpCamera;
+
+	mCamera->sendToShader(mRenderer);
 }
 
 void Scene::addRenderer(Renderer * lpRenderer)
@@ -42,7 +49,7 @@ UINT Scene::createObject(Object* lpObject, Mesh * lpMesh)
 
 Object * Scene::getObj(UINT pid)
 {
-	return nullptr;
+	return mObjs[pid];
 }
 
 void Scene::removeObject(UINT pid)

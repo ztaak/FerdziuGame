@@ -19,6 +19,11 @@ Renderer::Renderer(ID3D11Device * pDev, ID3D11DeviceContext * pDevCon, IDXGISwap
 	HRESULT hr = createConstantBuffer<BufferPerObject>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0, mDev, mDevCon, &mBufferPerObject);
 	if (FAILED(hr)) printf("err"); // TODO: ERROR HANDELING
 
+	hr = createConstantBuffer<BufferPerApp>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 1, mDev, mDevCon, &mBufferPerApp);
+	if (FAILED(hr)) printf("err"); // TODO: ERROR HANDELING
+
+	hr = createConstantBuffer<BufferPerFrame>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 2, mDev, mDevCon, &mBufferPerFrame);
+	if (FAILED(hr)) printf("err"); // TODO: ERROR HANDELING
 }
 
 
@@ -50,6 +55,32 @@ HRESULT Renderer::updateObjectConstantBuffer(BufferPerObject * pData)
 	memcpy(dataPtr, pData, sizeof(BufferPerObject));
 
 	mDevCon->Unmap(mBufferPerObject, 0);
+	return S_OK;
+}
+
+HRESULT Renderer::updateAppConstantBuffer(BufferPerApp * pData)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	mDevCon->Map(mBufferPerApp, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	BufferPerApp* dataPtr = (BufferPerApp*)mappedResource.pData;
+	memcpy(dataPtr, pData, sizeof(BufferPerApp));
+
+	mDevCon->Unmap(mBufferPerApp, 0);
+	return S_OK;
+}
+
+HRESULT Renderer::updateFrameConstantBuffer(BufferPerFrame * pData)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	mDevCon->Map(mBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	BufferPerFrame* dataPtr = (BufferPerFrame*)mappedResource.pData;
+	memcpy(dataPtr, pData, sizeof(BufferPerFrame));
+
+	mDevCon->Unmap(mBufferPerFrame, 0);
 	return S_OK;
 }
 
