@@ -39,14 +39,101 @@ HRESULT Object::init(Renderer* lpRenderer, Mesh * lpMesh)
 	mIndiDrawCount = lpMesh->indices.size();
 	
 
-	XMStoreFloat4x4(&mMatrix, XMMatrixIdentity());
-	XMStoreFloat4x4(&mMatrix,  XMMatrixTranslation(0.0f,0.0f, 0.0f));
+	XMStoreFloat4x4(&mWorldMatrix, XMMatrixIdentity());
+	setMetrices({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
+
+	recalc = true;
 
 	return S_OK;
 }
 
+
+void Object::setMetrices(XMFLOAT3 pos, XMFLOAT3 scale, XMFLOAT3 rotation)
+{
+	setPostition(pos);
+	this->scale(scale);
+	setRotationX(rotation.x);
+	setRotationY(rotation.y);
+	setRotationZ(rotation.z);
+	recalc = true;
+}
+
+void Object::setPostition(XMFLOAT3 pos)
+{
+	mPos = pos;
+	recalc = true;
+}
+
+
+void Object::setRotationX(float v)
+{
+	mRotation.x = v;
+	recalc = true;
+}
+
+void Object::setRotationY(float v)
+{
+	mRotation.y = v;
+	recalc = true;
+}
+
+void Object::setRotationZ(float v)
+{
+	mRotation.z = v;
+	recalc = true;
+}
+
+void Object::move(XMFLOAT3 v)
+{
+	mPos.x += v.x;
+	mPos.y += v.y;
+	mPos.z += v.z;
+	recalc = true;
+}
+
+void Object::scale(XMFLOAT3 v)
+{
+	if (v.x <= 0.0f) v.x = 0.0f;
+	if (v.y <= 0.0f) v.y = 0.0f;
+	if (v.z <= 0.0f) v.z = 0.0f;
+	mScale.x = v.x;
+	mScale.y = v.y;
+	mScale.z = v.z;
+	recalc = true;
+}
+
+void Object::rotateX(float v)
+{
+	mRotation.x += v;
+	recalc = true;
+}
+
+void Object::rotateY(float v)
+{
+	mRotation.y += v;
+	recalc = true;
+}
+
+void Object::rotateZ(float v)
+{
+	mRotation.z += v;
+	recalc = true;
+}
+
 HRESULT Object::draw(Renderer * lpRenderer)
 {
+	if (recalc)
+	{
+		XMMATRIX temp = XMMatrixIdentity();
+		temp = XMMatrixMultiply(temp, XMMatrixRotationX(mRotation.x));
+		temp = XMMatrixMultiply(temp, XMMatrixRotationY(mRotation.y));
+		temp = XMMatrixMultiply(temp, XMMatrixRotationZ(mRotation.z));
+		temp = XMMatrixMultiply(temp, XMMatrixScaling(mScale.x, mScale.y, mScale.z));
+		temp = XMMatrixMultiply(temp, XMMatrixTranslation(mPos.x, mPos.y, mPos.z));
+		XMStoreFloat4x4(&mWorldMatrix, temp);
+		recalc = false;
+	}
+
 	// Set vertex buffer
 	UINT stride = sizeof(DefaultVertex);
 	UINT offset = 0;
@@ -59,8 +146,7 @@ HRESULT Object::draw(Renderer * lpRenderer)
 	lpRenderer->useShader();
 
 	BufferPerObject bpo;
-	bpo.worldMatrix = mMatrix;
-
+	bpo.worldMatrix = mWorldMatrix;
 	lpRenderer->updateObjectConstantBuffer(&bpo);
 
 	lpRenderer->getDevCon()->DrawIndexed(mIndiDrawCount, 0, 0);
@@ -68,10 +154,6 @@ HRESULT Object::draw(Renderer * lpRenderer)
 	return S_OK;
 }
 
-void Object::setPos(XMFLOAT3 pos)
-{
-	XMStoreFloat4x4(&mMatrix, XMMatrixTranslation(pos.x, pos.y, pos.z));
-}
 
 
 Object::~Object()
