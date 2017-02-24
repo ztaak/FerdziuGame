@@ -68,6 +68,9 @@ int main(int argc, char **argv)
 
 	Mesh mesh;
 	getCubeMesh(&mesh);
+	ID3D11ShaderResourceView* tex;
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(renderer->getDev(), L"dirt.bmp", NULL, NULL, &tex, NULL);
+	mesh.texture = tex;
 
 	UINT obj1 = scene->createObject(new Object(), &mesh);
 	UINT obj2 = scene->createObject(new Object(), &mesh);

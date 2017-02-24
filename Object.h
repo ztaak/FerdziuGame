@@ -33,6 +33,7 @@ private:
 	ID3D11Buffer* mIndexBuffer;
 	UINT mIndiDrawCount;
 	
+	ID3D11ShaderResourceView* mTexture;
 
 	XMFLOAT4X4 mWorldMatrix;
 	XMFLOAT3 mPos;

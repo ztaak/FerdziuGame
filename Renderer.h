@@ -84,5 +84,7 @@ private:
 	ID3D11Buffer* mBufferPerObject;
 	ID3D11Buffer* mBufferPerApp;
 	ID3D11Buffer* mBufferPerFrame;
+
+	ID3D11SamplerState* mSamplerState;
 };
 

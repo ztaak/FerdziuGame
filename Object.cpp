@@ -37,7 +37,7 @@ HRESULT Object::init(Renderer* lpRenderer, Mesh * lpMesh)
 
 
 	mIndiDrawCount = lpMesh->indices.size();
-	
+	mTexture = lpMesh->texture;
 
 	XMStoreFloat4x4(&mWorldMatrix, XMMatrixIdentity());
 	setMetrices({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
@@ -142,6 +142,8 @@ HRESULT Object::draw(Renderer * lpRenderer)
 	lpRenderer->getDevCon()->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	// Set primitive topology
 	lpRenderer->getDevCon()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// Set texture
+	lpRenderer->getDevCon()->PSSetShaderResources(0, 1, &mTexture);
 
 	lpRenderer->useShader();
 
