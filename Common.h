@@ -34,6 +34,7 @@ struct DefaultVertex
 {
 	DirectX::XMFLOAT3 Pos;
 	DirectX::XMFLOAT2 TexCoord;
+	DirectX::XMFLOAT3 Normal;
 };
 
 struct Mesh 

@@ -21,12 +21,14 @@ struct VS_INPUT
 {
 	float4 Pos : POSITION;
 	float2 Tex : TEXCOORD0;
+	float3 Normal : NORMAL;
 };
 
 struct PS_INPUT
 {
 	float4 Pos : SV_POSITION;
 	float2 Tex : TEXCOORD0;
+	float3 Normal : NORMAL;
 };
 
 //--------------------------------------------------------------------------------------
@@ -43,7 +45,9 @@ PS_INPUT VS( VS_INPUT input )
 	float4 pos = mul(modelViewProjection, input.Pos);
 
 	output.Pos = pos;
-	
+
+	output.Normal = mul(input.Normal, (float3x3)transpose(world));
+	output.Normal = normalize(output.Normal);
 	
     return output;
 }
@@ -54,5 +58,17 @@ PS_INPUT VS( VS_INPUT input )
 //--------------------------------------------------------------------------------------
 float4 PS(PS_INPUT input ) : SV_Target
 {
-	return diffuseTex.Sample(samplerState, input.Tex);
+	float4 textureColor = diffuseTex.Sample(samplerState, input.Tex);
+
+	float3 lightDir = float3(-0.8f, -0.5f, -0.4f);
+	float lightIntensity = saturate(dot(input.Normal, lightDir));
+	float4 diffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	if (lightIntensity <= 0.3f)lightIntensity = 0.3f; // CHANGE THIS
+
+	float4 color = saturate(diffuseColor * lightIntensity);
+
+	color = color * textureColor;
+
+	return color;
 }

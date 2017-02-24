@@ -36,9 +36,11 @@ HRESULT Loader::LoadMesh(std::string pPath)
 				
 				aiVector3D pos = mesh->mVertices[face.mIndices[v]];
 				aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[v]];
+				aiVector3D normal = mesh->HasNormals() ? mesh->mNormals[face.mIndices[v]] : aiVector3D(1.0f, 1.0f, 1.0f);
 				DefaultVertex df;
 				df.Pos = { pos.x, pos.y, pos.z };
 				df.TexCoord = { uv.x, uv.y };
+				df.Normal = { normal.x, normal.y, normal.z };
 
 				tempMesh->vertices.push_back(df);
 				tempMesh->indices.push_back(count);
