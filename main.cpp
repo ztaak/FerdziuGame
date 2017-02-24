@@ -1,5 +1,6 @@
 #include "Core.h"
 #include "Scene.h"
+#include "Loader.h"
 
 Core* core;
 Renderer* renderer;
@@ -66,8 +67,10 @@ int main(int argc, char **argv)
 	scene->addCamera(cam);
 
 
-	Mesh mesh;
-	getCubeMesh(&mesh);
+	Mesh mesh ;
+	Loader::LoadMesh("data/cos.obj");
+	mesh = *Loader::GetMesh("data/cos.obj");
+
 	ID3D11ShaderResourceView* tex;
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(renderer->getDev(), L"dirt.bmp", NULL, NULL, &tex, NULL);
 	mesh.texture = tex;
