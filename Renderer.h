@@ -51,7 +51,7 @@ HRESULT createConstantBuffer(D3D11_USAGE usage, UINT cpuAccessFlag, UINT index,
 class Renderer
 {
 public:
-	Renderer(ID3D11Device* pDev, ID3D11DeviceContext* pDevCon, IDXGISwapChain* pSwapChain, ID3D11RenderTargetView* pBackBuffer);
+	Renderer(ID3D11Device* pDev, ID3D11DeviceContext* pDevCon, IDXGISwapChain* pSwapChain, ID3D11RenderTargetView* pBackBuffer, ID3D11DepthStencilView* pDepthView);
 
 	void useShader();
 	void cleanScr(DirectX::XMFLOAT4 color);
@@ -76,6 +76,7 @@ private:
 	ID3D11DeviceContext* mDevCon;
 	IDXGISwapChain* mSwapChain;
 	ID3D11RenderTargetView* mBackBuffer;
+	ID3D11DepthStencilView* mDepthView;
 
 	ID3D11VertexShader* mVertexShader;
 	ID3D11PixelShader* mPixelShader;

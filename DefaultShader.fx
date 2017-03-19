@@ -60,11 +60,11 @@ float4 PS(PS_INPUT input ) : SV_Target
 {
 	float4 textureColor = diffuseTex.Sample(samplerState, input.Tex);
 
-	float3 lightDir = float3(-0.8f, -0.5f, -0.4f);
+	float3 lightDir = float3(-0.0f, 0.0f, -1.0f);
 	float lightIntensity = saturate(dot(input.Normal, lightDir));
 	float4 diffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	if (lightIntensity <= 0.3f)lightIntensity = 0.3f; // CHANGE THIS
+	if (lightIntensity <= 0.6f)lightIntensity = 0.6f; // CHANGE THIS
 
 	float4 color = saturate(diffuseColor * lightIntensity);
 

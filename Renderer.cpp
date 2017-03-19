@@ -3,18 +3,20 @@
 
 
 
-Renderer::Renderer(ID3D11Device * pDev, ID3D11DeviceContext * pDevCon, IDXGISwapChain * pSwapChain, ID3D11RenderTargetView * pBackBuffer)
+Renderer::Renderer(ID3D11Device * pDev, ID3D11DeviceContext * pDevCon, IDXGISwapChain * pSwapChain, ID3D11RenderTargetView * pBackBuffer, ID3D11DepthStencilView* pDepthView)
 {
 	assert(pDev != nullptr);
 	assert(pDevCon != nullptr);
 	assert(pSwapChain != nullptr);
 	assert(pBackBuffer != nullptr);
+	assert(pDepthView != nullptr);
 
 
 	mDev = pDev;
 	mDevCon = pDevCon;
 	mSwapChain = pSwapChain;
 	mBackBuffer = pBackBuffer;
+	mDepthView = pDepthView;
 
 	HRESULT hr = createConstantBuffer<BufferPerObject>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0, mDev, mDevCon, &mBufferPerObject);
 	if (FAILED(hr)) printf("err"); // TODO: ERROR HANDELING
@@ -45,12 +47,14 @@ void Renderer::useShader()
 	mDevCon->VSSetShader(mVertexShader, NULL, 0);
 	mDevCon->PSSetShader(mPixelShader, NULL, 0);
 	mDevCon->PSSetSamplers(0, 1, &mSamplerState);
+	mDevCon->OMSetRenderTargets(1, &mBackBuffer, mDepthView);
 }
 
 void Renderer::cleanScr(DirectX::XMFLOAT4 color)
 {
 	float fcolor[4] = { color.x, color.y, color.z, color.w };
 	mDevCon->ClearRenderTargetView(mBackBuffer, fcolor);
+	mDevCon->ClearDepthStencilView(mDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 void Renderer::swapAndPresent()

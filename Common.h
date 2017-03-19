@@ -37,7 +37,7 @@ struct DefaultVertex
 	DirectX::XMFLOAT3 Normal;
 };
 
-struct Mesh 
+struct Mesh  // TODO: MULTIPLY TEXTURES
 {
 	std::vector<DefaultVertex> vertices;
 	std::vector<WORD> indices;

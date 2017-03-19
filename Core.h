@@ -17,7 +17,7 @@ public:
 	HRESULT createWindow(WND_PARAMS pparams);
 	HRESULT initializeAPI(); // TODO: ERROR CHACKING KURCZE!!!!
 	HRESULT createRenderer(Renderer** lppRenderer);
-	//HRESULT createRenderer(Renderer** lppRenderer); // CUSTOM SHADER 
+	//HRESULT createRenderer(Renderer** lppRenderer); // TODO: CUSTOM SHADER 
 
 	int loop(std::function<void(void)> update, std::function<void(void)> render);
 
@@ -31,6 +31,7 @@ private:
 	ID3D11DeviceContext* mDevCon;
 	IDXGISwapChain* mSwapChain;
 	ID3D11RenderTargetView* mBackBuffer;
+	ID3D11DepthStencilView* mDepthView;
 
 	HWND mHwnd;
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

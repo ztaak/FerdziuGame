@@ -21,14 +21,18 @@ HRESULT Core::createWindow(WND_PARAMS pparams)
 	if (!RegisterClassEx(&wc))
 		return E_FAIL;
 
+	RECT adjWinSize = {0, 0, pparams.cSize.x, pparams.cSize.y};
+	AdjustWindowRect(&adjWinSize, WS_OVERLAPPEDWINDOW, FALSE);
+
+
 	mHwnd = CreateWindowEx(NULL,
 		L"WindowClass1",
 		L"POZNIEJ ZMIENIE TO!!!!!!!!!!!!", // TODO: CHANGE TO TITLE
 		WS_OVERLAPPEDWINDOW,
 		pparams.pos.x,
 		pparams.pos.y,
-		pparams.cSize.x, // TODO: ADJUST SIZE TO RENDER SIZE
-		pparams.cSize.y,
+		adjWinSize.right - adjWinSize.left,
+		adjWinSize.bottom - adjWinSize.top,
 		NULL,
 		NULL,
 		GetModuleHandle(NULL),
@@ -68,7 +72,30 @@ HRESULT Core::initializeAPI()
 	mDev->CreateRenderTargetView(pBackBuffer, NULL, &mBackBuffer);
 	pBackBuffer->Release();
 
-	mDevCon->OMSetRenderTargets(1, &mBackBuffer, NULL);
+	D3D11_TEXTURE2D_DESC depthTextureDesc;
+	ZeroMemory(&depthTextureDesc, sizeof(depthTextureDesc));
+	depthTextureDesc.Width = sWndParams.cSize.x;
+	depthTextureDesc.Height = sWndParams.cSize.y;
+	depthTextureDesc.MipLevels = 1;
+	depthTextureDesc.ArraySize = 1;
+	depthTextureDesc.SampleDesc.Count = sWndParams.msaa;
+	depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+	ID3D11Texture2D *depthStencilTexture;
+	hr = mDev->CreateTexture2D(&depthTextureDesc, NULL, &depthStencilTexture);
+
+	if (FAILED(hr))
+		return hr;
+
+
+	hr = mDev->CreateDepthStencilView(depthStencilTexture, NULL, &mDepthView);
+	depthStencilTexture->Release();
+
+	if (FAILED(hr))
+		return hr;
+
+	mDevCon->OMSetRenderTargets(1, &mBackBuffer, mDepthView);
 
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -77,6 +104,8 @@ HRESULT Core::initializeAPI()
 	viewport.TopLeftY = 0;
 	viewport.Width = sWndParams.cSize.x;
 	viewport.Height = sWndParams.cSize.y;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
 	mDevCon->RSSetViewports(1, &viewport);
 
@@ -88,7 +117,7 @@ HRESULT Core::createRenderer(Renderer ** lppRenderer)
 	if (*lppRenderer != nullptr)
 		return E_FAIL;
 
-	*lppRenderer = new Renderer(mDev, mDevCon, mSwapChain, mBackBuffer);
+	*lppRenderer = new Renderer(mDev, mDevCon, mSwapChain, mBackBuffer, mDepthView);
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
 	ID3D11InputLayout* vertexLayout;
@@ -143,6 +172,7 @@ HRESULT Core::createRenderer(Renderer ** lppRenderer)
 	pPSBlob->Release();
 	if (FAILED(hr))
 		return hr;
+
 
 	(*(*lppRenderer)->getVertexShaderPP()) = vertexShader;
 	(*(*lppRenderer)->getPixelShaderPP()) = pixelShader;

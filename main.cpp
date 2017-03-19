@@ -30,8 +30,6 @@ void updateFunc()
 	cam->pitch(-(dy/2.0f));
 	cam->yaw(-(dx/2.0f));
 
-	scene->getObj(0)->rotateX(0.1f);
-	scene->getObj(0)->scale({ (float)cos(x), (float)cos(x), (float)cos(x) });
 	x += 0.05f;
 }
 
@@ -52,7 +50,7 @@ int main(int argc, char **argv)
 	wp.cSize = {800.0f, 600.0f};
 	wp.title = "TITLE";
 	wp.msaa = 4;
-	wp.isFS = false;
+	wp.isFS = false; // TODO: REAPIR FULLSCREEN
 
 	core = new Core();
 	core->createWindow(wp);
@@ -66,20 +64,20 @@ int main(int argc, char **argv)
 	scene->addRenderer(renderer);
 	scene->addCamera(cam);
 
-
-	Mesh mesh ;
-	Loader::LoadMesh("data/cos.obj");
-	mesh = *Loader::GetMesh("data/cos.obj");
-
-	ID3D11ShaderResourceView* tex;
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(renderer->getDev(), L"dirt.bmp", NULL, NULL, &tex, NULL);
-	mesh.texture = tex;
-
-	UINT obj1 = scene->createObject(new Object(), &mesh);
-	UINT obj2 = scene->createObject(new Object(), &mesh);
 	
-	scene->getObj(obj1)->setPostition({ 2.0f, 2.0f, 1.0f });
-	scene->getObj(obj2)->setPostition({ -2.0f, -2.0f, 0.0f });
+	
+
+	Mesh meshTable;
+	Loader::LoadMesh("data/table.obj");
+	meshTable = *Loader::GetMesh("data/table.obj");
+	ID3D11ShaderResourceView* texTable;
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(renderer->getDev(), L"data/woodtexture.jpg", NULL, NULL, &texTable, NULL);
+	if (FAILED(hr)) MessageBox(NULL, NULL, NULL, NULL);
+	meshTable.texture = texTable;
+	UINT tableObj = scene->createObject(new Object(), &meshTable);
+	scene->getObj(tableObj)->scale({ 10.0f, 10.0f, 10.0f });
+
+
 
 	SetCursorPos(sMousePos.x, sMousePos.y);
 
