@@ -10,9 +10,9 @@
 class Loader
 {
 public:
-	static HRESULT LoadMesh(std::string pPath);
-	static Mesh* GetMesh(std::string pPath);
+	static HRESULT LoadModel(std::string pPath);
+	static Model* GetModel(std::string pPath);
 private:
-	static std::map<std::string, Mesh*> smMeshes;
+	static std::map<std::string, Model*> smModels;
 };
 

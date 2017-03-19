@@ -1,10 +1,10 @@
 #include "Loader.h"
 
-std::map<std::string, Mesh*> Loader::smMeshes;
+std::map<std::string, Model*> Loader::smModels;
 
-HRESULT Loader::LoadMesh(std::string pPath)
+HRESULT Loader::LoadModel(std::string pPath)
 {
-	if (smMeshes[pPath] != nullptr) {
+	if (smModels[pPath] != nullptr) {
 		return S_OK;
 	}
 
@@ -21,7 +21,8 @@ HRESULT Loader::LoadMesh(std::string pPath)
 		return E_FAIL;
 	}
 
-	Mesh* tempMesh = new Mesh;
+	Mesh* tempMeshes;
+	tempMeshes = new Mesh[scene->mNumMeshes];
 
 	for (int m = 0; m < scene->mNumMeshes; ++m) {
 		
@@ -35,15 +36,15 @@ HRESULT Loader::LoadMesh(std::string pPath)
 			for (int v = 0; v < 3; ++v) {
 				
 				aiVector3D pos = mesh->mVertices[face.mIndices[v]];
-				aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[v]];
+				aiVector3D uv = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][face.mIndices[v]] : aiVector3D(1.0f, 1.0f, 1.0f);
 				aiVector3D normal = mesh->HasNormals() ? mesh->mNormals[face.mIndices[v]] : aiVector3D(1.0f, 1.0f, 1.0f);
 				DefaultVertex df;
 				df.Pos = { pos.x, pos.y, pos.z };
 				df.TexCoord = { uv.x, uv.y };
 				df.Normal = { normal.x, normal.y, normal.z };
 
-				tempMesh->vertices.push_back(df);
-				tempMesh->indices.push_back(count);
+				tempMeshes[m].vertices.push_back(df);
+				tempMeshes[m].indices.push_back(count);
 				count++;
 
 			}
@@ -52,13 +53,23 @@ HRESULT Loader::LoadMesh(std::string pPath)
 
 	}
 
-	smMeshes[pPath] = tempMesh;
+	Model* tempModel = new Model;
+
+	for (int i = 0; i < scene->mNumMeshes; ++i) {
+		tempModel->meshes.push_back(&tempMeshes[i]);
+	}
+	
+	
+	smModels[pPath] = tempModel;
 
 
 	return S_OK;
 }
 
-Mesh * Loader::GetMesh(std::string pPath)
+Model * Loader::GetModel(std::string pPath)
 {
-	return smMeshes[pPath];
+	if (smModels[pPath] == nullptr) {
+		LoadModel(pPath);
+	}
+	return smModels[pPath];
 }

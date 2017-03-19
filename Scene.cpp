@@ -36,11 +36,11 @@ void Scene::addRenderer(Renderer * lpRenderer)
 	mRenderer = lpRenderer;
 }
 
-UINT Scene::createObject(Object* lpObject, Mesh * lpMesh)
+UINT Scene::createObject(Object* lpObject, Model * lpModel)
 {
 	assert(lpObject != nullptr);
 
-	lpObject->init(mRenderer, lpMesh);
+	lpObject->init(mRenderer, lpModel);
 
 	UINT id = mObjs.size();
 	mObjs.push_back(lpObject);

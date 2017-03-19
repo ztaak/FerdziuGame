@@ -12,6 +12,9 @@ static POINT newMousePos = { 400.0f, 300.0f };
 static int dx = 0;
 static int dy = 0;
 static float x = 0;
+
+UINT sinon;
+
 void updateFunc() 
 {
 	if (GetAsyncKeyState(VK_UP)) cam->move(0.2f);
@@ -29,6 +32,8 @@ void updateFunc()
 
 	cam->pitch(-(dy/2.0f));
 	cam->yaw(-(dx/2.0f));
+
+	scene->getObj(sinon)->rotateY(0.05f);
 
 	x += 0.05f;
 }
@@ -66,16 +71,17 @@ int main(int argc, char **argv)
 
 	
 	
-
-	Mesh meshTable;
-	Loader::LoadMesh("data/table.obj");
-	meshTable = *Loader::GetMesh("data/table.obj");
 	ID3D11ShaderResourceView* texTable;
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(renderer->getDev(), L"data/woodtexture.jpg", NULL, NULL, &texTable, NULL);
 	if (FAILED(hr)) MessageBox(NULL, NULL, NULL, NULL);
-	meshTable.texture = texTable;
-	UINT tableObj = scene->createObject(new Object(), &meshTable);
-	scene->getObj(tableObj)->scale({ 10.0f, 10.0f, 10.0f });
+
+
+	Model* sinonModel = Loader::GetModel("data/s/sinon-sword-art-online.obj");
+	for (int i = 0; i < sinonModel->meshes.size(); ++i) {
+		sinonModel->meshes[i]->texture = texTable;
+	}
+	
+	sinon = scene->createObject(new Object(), sinonModel);
 
 
 

@@ -11,7 +11,7 @@ class Object
 public:
 	Object();
 
-	HRESULT init(Renderer* lpRenderer, Mesh * lpMesh);
+	HRESULT init(Renderer* lpRenderer, Model * lpModel);
 	HRESULT draw(Renderer* lpRenderer);
 
 	void setMetrices(XMFLOAT3 pos, XMFLOAT3 scale, XMFLOAT3 rotation);
@@ -29,11 +29,9 @@ public:
 	~Object();
 
 private:
-	ID3D11Buffer* mVertexBuffer;
-	ID3D11Buffer* mIndexBuffer;
-	UINT mIndiDrawCount;
-	
-	ID3D11ShaderResourceView* mTexture;
+	BufferModel mBufferModel;
+
+	UINT numOfMeshes;
 
 	XMFLOAT4X4 mWorldMatrix;
 	XMFLOAT3 mPos;

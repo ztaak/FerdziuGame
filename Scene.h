@@ -12,7 +12,7 @@ public:
 	void addCamera(Camera* lpCamera);
 	void addRenderer(Renderer* lpRenderer);
 
-	UINT createObject(Object* lpObject, Mesh * lpMesh);
+	UINT createObject(Object* lpObject, Model * lpModel);
 	Object* getObj(UINT pid);
 	void removeObject(UINT pid);
 	void removeAllObjects();

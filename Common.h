@@ -37,12 +37,27 @@ struct DefaultVertex
 	DirectX::XMFLOAT3 Normal;
 };
 
-struct Mesh  // TODO: MULTIPLY TEXTURES
+
+struct Mesh
 {
 	std::vector<DefaultVertex> vertices;
 	std::vector<WORD> indices;
 	ID3D11ShaderResourceView* texture;
 };
+
+struct Model
+{
+	std::vector<Mesh*> meshes;
+};
+
+struct BufferModel
+{
+	std::vector<ID3D11Buffer*> vertexBuffers;
+	std::vector<ID3D11Buffer*> indexBuffers;
+	std::vector<UINT> indiDrawCounts;
+	std::vector<ID3D11ShaderResourceView*> textures;
+};
+
 
 static HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
