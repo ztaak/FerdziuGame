@@ -40,11 +40,13 @@ HRESULT Object::init(Renderer* lpRenderer, Model * lpModel)
 
 		UINT indiDrawCount = lpModel->meshes[m]->indices.size();
 		ID3D11ShaderResourceView* texture = lpModel->meshes[m]->texture;
+		Material material = lpModel->meshes[m]->material;
 		
 		mBufferModel.vertexBuffers.push_back(vertexBuffer);
 		mBufferModel.indexBuffers.push_back(indexBuffer);
 		mBufferModel.indiDrawCounts.push_back(indiDrawCount);
 		mBufferModel.textures.push_back(texture);
+		mBufferModel.materials.push_back(material);
 
 	}
 
@@ -149,6 +151,9 @@ HRESULT Object::draw(Renderer * lpRenderer)
 	lpRenderer->updateObjectConstantBuffer(&bpo);
 
 	for (int i = 0; i < numOfMeshes; ++i) {
+
+		lpRenderer->updateMaterialBuffer(&mBufferModel.materials[i]);
+
 		UINT stride = sizeof(DefaultVertex);
 		UINT offset = 0;
 		lpRenderer->getDevCon()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

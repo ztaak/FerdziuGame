@@ -37,12 +37,23 @@ struct DefaultVertex
 	DirectX::XMFLOAT3 Normal;
 };
 
+struct Material
+{
+	DirectX::XMFLOAT4 emissive;
+	DirectX::XMFLOAT4 ambient;
+	DirectX::XMFLOAT4 diffuse;
+	DirectX::XMFLOAT4 specular;
+	float specularPower;
+	bool useTexture;
+	DirectX::XMFLOAT2 padding;
+};
 
 struct Mesh
 {
 	std::vector<DefaultVertex> vertices;
 	std::vector<WORD> indices;
 	ID3D11ShaderResourceView* texture;
+	Material material;
 };
 
 struct Model
@@ -56,6 +67,8 @@ struct BufferModel
 	std::vector<ID3D11Buffer*> indexBuffers;
 	std::vector<UINT> indiDrawCounts;
 	std::vector<ID3D11ShaderResourceView*> textures;
+	std::vector<Material> materials;
+	std::vector<bool> useTexture;
 };
 
 

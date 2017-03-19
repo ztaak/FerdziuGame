@@ -27,6 +27,9 @@ Renderer::Renderer(ID3D11Device * pDev, ID3D11DeviceContext * pDevCon, IDXGISwap
 	hr = createConstantBuffer<BufferPerFrame>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 2, mDev, mDevCon, &mBufferPerFrame);
 	if (FAILED(hr)) printf("err"); // TODO: ERROR HANDELING
 
+	hr = createConstantBuffer<Material>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 3, mDev, mDevCon, &mMaterialBuffer);
+	if (FAILED(hr)) printf("err"); // TODO: ERROR HANDELING
+
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -98,6 +101,19 @@ HRESULT Renderer::updateFrameConstantBuffer(BufferPerFrame * pData)
 	memcpy(dataPtr, pData, sizeof(BufferPerFrame));
 
 	mDevCon->Unmap(mBufferPerFrame, 0);
+	return S_OK;
+}
+
+HRESULT Renderer::updateMaterialBuffer(Material * pData)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	mDevCon->Map(mMaterialBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	Material* dataPtr = (Material*)mappedResource.pData;
+	memcpy(dataPtr, pData, sizeof(Material));
+
+	mDevCon->Unmap(mMaterialBuffer, 0);
 	return S_OK;
 }
 

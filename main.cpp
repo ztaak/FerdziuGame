@@ -14,6 +14,7 @@ static int dy = 0;
 static float x = 0;
 
 UINT sinon;
+UINT ak;
 
 void updateFunc() 
 {
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
 	WND_PARAMS wp;
 	ZeroMemory(&wp, sizeof(wp));
 	wp.pos = {50.0f, 50.0f};
-	wp.cSize = {800.0f, 600.0f};
+	wp.cSize = {1366.0f, 768.0f};
 	wp.title = "TITLE";
 	wp.msaa = 4;
 	wp.isFS = false; // TODO: REAPIR FULLSCREEN
@@ -82,6 +83,14 @@ int main(int argc, char **argv)
 	}
 	
 	sinon = scene->createObject(new Object(), sinonModel);
+	scene->getObj(sinon)->move({0.0f, 1.0f, 0.0f});
+
+	Model* akModel = Loader::GetModel("data/untitled.obj");
+	for (int i = 0; i < akModel->meshes.size(); ++i) {
+		akModel->meshes[i]->texture = texTable;
+	}
+
+	ak = scene->createObject(new Object(), akModel);
 
 
 

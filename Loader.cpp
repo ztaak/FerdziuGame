@@ -27,6 +27,8 @@ HRESULT Loader::LoadModel(std::string pPath)
 	for (int m = 0; m < scene->mNumMeshes; ++m) {
 		
 		aiMesh* mesh = scene->mMeshes[m];
+
+
 		int numOfFaces = mesh->mNumFaces;
 		int count = 0;
 		for (int f = 0; f < numOfFaces; ++f) {
@@ -45,6 +47,34 @@ HRESULT Loader::LoadModel(std::string pPath)
 
 				tempMeshes[m].vertices.push_back(df);
 				tempMeshes[m].indices.push_back(count);
+
+
+				const aiMaterial* aMat = scene->mMaterials[scene->mMeshes[m]->mMaterialIndex];
+				aiColor3D aDif;
+				aiColor3D aAmb;
+				aiColor3D aSpec;
+				aiColor3D aEmi;
+				float aSp;
+				aMat->Get(AI_MATKEY_COLOR_DIFFUSE, aDif);
+				aMat->Get(AI_MATKEY_COLOR_AMBIENT, aAmb);
+				aMat->Get(AI_MATKEY_COLOR_SPECULAR, aSpec);
+				aMat->Get(AI_MATKEY_COLOR_EMISSIVE, aEmi);
+				aMat->Get(AI_MATKEY_SHININESS_STRENGTH, aSp);
+				tempMeshes[m].material.diffuse = { aDif.r, aDif.g, aDif.b, 1.0f };
+				tempMeshes[m].material.ambient = { aAmb.r, aAmb.g, aAmb.b, 1.0f };
+				tempMeshes[m].material.specular = { aSpec.r, aSpec.g, aSpec.b, 1.0f };
+				tempMeshes[m].material.emissive = { aEmi.r, aEmi.g, aEmi.b, 1.0f };
+				tempMeshes[m].material.specularPower = aSp;
+
+				aiString tpath;
+				if (aMat->GetTexture(aiTextureType_DIFFUSE, 0, &tpath) == AI_SUCCESS) {
+					tempMeshes[m].material.useTexture = true;
+				}
+				else {
+					tempMeshes[m].material.useTexture = false;
+				}
+
+
 				count++;
 
 			}
@@ -52,6 +82,8 @@ HRESULT Loader::LoadModel(std::string pPath)
 		}
 
 	}
+
+
 
 	Model* tempModel = new Model;
 

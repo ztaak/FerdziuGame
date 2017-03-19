@@ -60,6 +60,7 @@ public:
 	HRESULT updateObjectConstantBuffer(BufferPerObject * pData);
 	HRESULT updateAppConstantBuffer(BufferPerApp * pData);
 	HRESULT updateFrameConstantBuffer(BufferPerFrame * pData);
+	HRESULT updateMaterialBuffer(Material * pData);
 
 	ID3D11Device* getDev() { return mDev; }
 	ID3D11DeviceContext* getDevCon() { return mDevCon; }
@@ -85,6 +86,7 @@ private:
 	ID3D11Buffer* mBufferPerObject;
 	ID3D11Buffer* mBufferPerApp;
 	ID3D11Buffer* mBufferPerFrame;
+	ID3D11Buffer* mMaterialBuffer;
 
 	ID3D11SamplerState* mSamplerState;
 };

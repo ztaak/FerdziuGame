@@ -9,7 +9,7 @@ cbuffer cbPerApp : register(b1)
 	matrix proj;
 }
 
-cbuffer cbPerObj : register(b0) 
+cbuffer cbPerObj : register(b0)
 {
 	matrix world;
 }
@@ -23,7 +23,7 @@ struct Material
 	float   SpecularPower;
 	bool    UseTexture;
 	float2  Padding;
-}; 
+};
 
 cbuffer cbMaterial : register(b3)
 {
@@ -42,57 +42,52 @@ struct VS_INPUT
 
 struct PS_INPUT
 {
-	float4 Pos : SV_POSITION;
-	float2 Tex : TEXCOORD0;
-	float3 Normal : NORMAL;
+	float4 Position : SV_POSITION;
+	float4 PositionWorld : TEXCOORD0;
+	float2 TextureCoordinate : TEXCOORD1;
 };
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-PS_INPUT VS( VS_INPUT input )
+PS_INPUT VS(VS_INPUT input)
 {
 	PS_INPUT output = (PS_INPUT)0;
-    output.Tex = input.Tex;
-	
+	output.TextureCoordinate = input.Tex;
 
+	float4 worldPosition = mul(input.Pos, world);
 	float4x4 modelView = mul(view, world);
 	float4x4 modelViewProjection = mul(proj, modelView);
 	float4 pos = mul(modelViewProjection, input.Pos);
 
-	output.Pos = pos;
+	output.Position = pos;
+	output.PositionWorld = worldPosition;
 
-	output.Normal = mul(input.Normal, (float3x3)transpose(world));
-	output.Normal = normalize(output.Normal);
-	
-    return output;
+
+	return output;
 }
 
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS(PS_INPUT input ) : SV_Target
+float4 PS(PS_INPUT input) : SV_Target
 {
-	float4 lightDiffuse = float4(0.9f, 0.9f, 0.9f, 1.0f);
-	float4 lightAmbient = float4(0.7f, 0.7f, 0.7f, 1.0f);
+	float3 Normal = cross(ddy(input.PositionWorld.xyz), ddx(input.PositionWorld.xyz));
+	Normal = normalize(Normal);
 
-	float3 lightDir = float3(0.3f, 0.3f, 0.7f);
-	float lightIntensity = saturate(dot(input.Normal, lightDir));
+	float3 lightDir = float3(-0.3f, -0.3f, -1.0f);
+	float lightIntensity = saturate(dot(Normal, lightDir));
 
-	lightIntensity /= 0.5f;
-	lightIntensity += 0.25f;
-	
-	
-	float4 diffuseColor = (material.Diffuse * lightDiffuse) * lightIntensity;
-	float4 ambientColor = material.Ambient * lightAmbient;
+	if (lightIntensity <= 0.6f)lightIntensity = 0.6f;
 
-	float4 color = saturate(diffuseColor + ambientColor);
+	float4 lightColor = lightIntensity * material.Diffuse * 1.0f + material.Ambient * 1.0f;
+	lightColor.a = 1;
 
-	if (material.UseTexture == false || false) {
-		//float4 textureColor = diffuseTex.Sample(samplerState, input.Tex);
-		//color = color * textureColor;
-	}
 
-	return color;
+	float4 textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	//textureColor = diffuseTex.Sample(samplerState, input.TextureCoordinate);
+	//textureColor.a = 1;
+
+	return saturate(textureColor * lightColor);
 }
